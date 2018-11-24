@@ -8,7 +8,7 @@ D=length(s);
 deltaup=zeros(1,D-1);
 
 % dane
-n = 1000;
+n = 10000;
 tau = 50;
 U0 = 54;
 D0 = 10;
@@ -20,11 +20,11 @@ U = U0*ones(1,n);
 D = D0*ones(1,n);
 Y = Y0*ones(1,n);
 Yz = Y;
-Yz(start:n) = Y0+dY;
-%Yz(start:200) = Y0+dY*2;
-%Yz(200:500) = Y0-dY;
-%Yz(500:n) = Y0;
-Yz(start:n) = Y0+1;
+%Yz(start:n) = Y0+dY;
+Yz(start:2000) = Y0+dY*2;
+Yz(2000:5000) = Y0-dY;
+Yz(5000:n) = Y0;
+%Yz(start:n) = Y0+1;
 e = zeros(1,n);
 Tp = 1;
 kp = 0.7;
