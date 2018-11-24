@@ -4,11 +4,10 @@ resetObj();
 load('state.mat');
 load('params.mat');
 load('stepRes');
-% C1 = 0.95;
-% C2 = 0.95;
-% a1 = 16;
-% a2 = 16;
 il = 5;
+Umax = 84;
+Umin = 24;
+dumax = .1;
 
 h2_stat = zeros (100,1);
 for u = 24:84
@@ -151,16 +150,18 @@ for k = start:n
         end
     end
     DELTAuk = w*deltauk/sum(w);
+    DELTAuk = max(min(DELTAuk, dumax),-dumax);
 
     for i = D-1:-1:2
       deltaup(i) = deltaup(i-1);
     end
     deltaup(1) = DELTAuk;
     U(k) = U(k-1)+deltaup(1);
+    U(k) = max(min(U(k),Umax),Umin);
 end
 
 plot(Yz, 'r')
 hold on
 plot(Y, 'b')
-% figure
-% plot(U)
+figure
+plot(U)
