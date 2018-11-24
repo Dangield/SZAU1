@@ -101,3 +101,5 @@ end
 plot(Yz, 'r')
 hold on
 plot(Y, 'b')
+figure
+plot(U)
