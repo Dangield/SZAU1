@@ -18,7 +18,7 @@ resetObj();
 for i = start+1:n
     Y(i) = objLin(U(i-1-tau), D(i-1));
 end
-s = (Y(start+1:n)-Y0)/step;
+s = (Y(start+1:start+225)-Y0)/step;
 subplot(2,1,1)
 plot(s)
 
@@ -32,7 +32,7 @@ resetObj();
 for i = start+1:n
     Y(i) = objLin(U(i-1-tau), D(i-1));
 end
-z = (Y(start+1:n)-Y0)/step;
+z = (Y(start+1:start+225)-Y0)/step;
 subplot(2,1,2)
 plot(z)
 
