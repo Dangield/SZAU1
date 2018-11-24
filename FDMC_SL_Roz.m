@@ -119,7 +119,7 @@ hold on
 yzad = zeros(1,N)';
 yk = zeros(1,N)';
 A = [tril(ones(Nu));tril(ones(Nu))*-1];
-b = zeros(2*Nu,1);
+B = zeros(2*Nu,1);
 for k = start:n
     % symulacja
     V1 = V1 + U(k-1-tau) + Dist(k-1) - a1*h1^0.5;
@@ -160,11 +160,11 @@ for k = start:n
         MZPr = MZPr + w(i)*MZP(:,:,i)/sum(w);
     end
     lambdar = w*lambda'/sum(w);
-    b(1:Nu)=(84-U(k-1));
-    b(Nu+1:end) = (U(k-1)-24);
+    B(1:Nu)=(84-U(k-1));
+    B(Nu+1:end) = (U(k-1)-24);
     yzad(1:end)=Yz(k);
     yk(1:end)=Y(k);
-    duk = fmincon(@(duk)(yzad-yk+MPr*deltaup+MZPr*deltazp-Mr*duk)'*(yzad-yk+MPr*deltaup+MZPr*deltazp-Mr*duk)+lambdar*duk'*duk,duk,A,b,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
+    duk = fmincon(@(duk)(yzad-yk-MPr*deltaup-MZPr*deltazp-Mr*duk)'*(yzad-yk-MPr*deltaup-MZPr*deltazp-Mr*duk)+lambdar*duk'*duk,duk,A,B,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
     DELTAuk = duk(1);
     %duk = circshift(duk,-1);
     k
@@ -174,6 +174,10 @@ for k = start:n
     end
     deltaup(1) = DELTAuk;
     U(k) = U(k-1)+deltaup(1);
+    plot(Yz, 'r')
+    hold on
+    plot(Y, 'b')
+    drawnow;
 end
 
 plot(Yz, 'r')

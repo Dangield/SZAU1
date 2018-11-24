@@ -102,7 +102,7 @@ for k = start:n
     b(Nu+1:end) = (U(k-1)-24);
     yzad(1:end)=Yz(k);
     yk(1:end)=Y(k);
-    duk = fmincon(@(duk)(yzad-yk+MP*deltaup+MZP*deltazp-M*duk)'*(yzad-yk+MP*deltaup+MZP*deltazp-M*duk)+lambda*duk'*duk,duk,A,b,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
+    duk = fmincon(@(duk)(yzad-yk-MP*deltaup-MZP*deltazp-M*duk)'*(yzad-yk-MP*deltaup-MZP*deltazp-M*duk)+lambda*duk'*duk,duk,A,b,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
     deltauk=duk(1);
 
     for i = D-1:-1:2
