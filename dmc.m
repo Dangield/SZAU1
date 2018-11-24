@@ -7,7 +7,7 @@ D=length(s);
 N=D;
 Nu=D;
 DZ = length(z);
-lambda = 5500;
+lambda = 2000;
 
 M=zeros(N,Nu);
 for i=1:N
@@ -59,7 +59,7 @@ start = 100;
 dY = [start 34; start+2000 4.5];
 
 U = U0*ones(1,n);
-D = D0*ones(1,n);
+Dist = D0*ones(1,n);
 Y = Y0*ones(1,n);
 Yz = Y;
 for i = 1:length(dY)
@@ -73,7 +73,7 @@ load('params.mat');
 hold on
 for k = start:n
     % symulacja
-    V1 = V1 + U(k-1-tau) + D(k-1) - a1*h1^0.5;
+    V1 = V1 + U(k-1-tau) + Dist(k-1) - a1*h1^0.5;
     V2 = V2 + a1*h1^0.5 - a2*h2^0.5;
     h1 = (V1/C1)^0.5;
     h2 = (V2/C2)^0.5;
@@ -86,7 +86,7 @@ for k = start:n
     for i = DZ:-1:2
        deltazp(i) = deltazp(i-1);
     end
-    deltazp(1) = D(k) - D(k-1);
+    deltazp(1) = Dist(k) - Dist(k-1);
 
     % Prawo regulacji
     deltauk = ke*e(k)-ku*deltaup'-kz*deltazp';

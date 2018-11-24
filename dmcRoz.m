@@ -36,17 +36,16 @@ end
 % zmienne i macierze regulatora
 D=length(S(1,:));
 N=D;
-Nu=D;
+Nu=N;
 DZ = length(Z);
-lambda = 5000:40000/(il-1):45000;
 if il == 2
-    lambda = [3000 45000];
+    lambda = [1000 7000];
 elseif il == 3
-    lambda = [5000 12000 40000];
+    lambda = [10 1000 3000];
 elseif il == 4
-    lambda = [3000 8000 18000 40000];
+    lambda = [10 100 100 1000];
 elseif il == 5
-    lambda = [3000 5000 18000 22000 40000];
+    lambda = [10 100 100 1000 100];
 end
     
 ku = zeros(il,D-1);
@@ -109,7 +108,7 @@ dY = [start 34; start+2000 4.5; start+4000 24; start+6000 14];
 n = length(dY)*2000+100;
 
 U = U0*ones(1,n);
-D = D0*ones(1,n);
+Dist = D0*ones(1,n);
 Y = Y0*ones(1,n);
 Yz = Y;
 for i = 1:length(dY)
@@ -120,7 +119,7 @@ e = zeros(1,n);
 hold on
 for k = start:n
     % symulacja
-    V1 = V1 + U(k-1-tau) + D(k-1) - a1*h1^0.5;
+    V1 = V1 + U(k-1-tau) + Dist(k-1) - a1*h1^0.5;
     V2 = V2 + a1*h1^0.5 - a2*h2^0.5;
     h1 = (V1/C1)^0.5;
     h2 = (V2/C2)^0.5;
@@ -132,7 +131,7 @@ for k = start:n
     for i = DZ:-1:2
        deltazp(i) = deltazp(i-1);
     end
-    deltazp(1) = D(k) - D(k-1);
+    deltazp(1) = Dist(k) - Dist(k-1);
 
     % Prawo regulacji
     for i = 1:il
@@ -165,3 +164,4 @@ hold on
 plot(Y, 'b')
 figure
 plot(U)
+sum((Y-Yz).^2)/n
