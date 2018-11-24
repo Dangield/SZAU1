@@ -60,7 +60,7 @@ start = 100;
 dY = [start 34; start+2000 4.5];
 
 U = U0*ones(1,n);
-D = D0*ones(1,n);
+Dist = D0*ones(1,n);
 Y = Y0*ones(1,n);
 Y0 = Y;
 Yz = Y;
@@ -80,7 +80,7 @@ A = [tril(ones(Nu));tril(ones(Nu))*-1];
 b = zeros(2*Nu,1);
 for k = start:n
     % symulacja
-    V1 = V1 + U(k-1-tau) + D(k-1) - a1*h1^0.5;
+    V1 = V1 + U(k-1-tau) + Dist(k-1) - a1*h1^0.5;
     V2 = V2 + a1*h1^0.5 - a2*h2^0.5;
     h1 = (V1/C1)^0.5;
     h2 = (V2/C2)^0.5;
@@ -93,7 +93,7 @@ for k = start:n
     for i = DZ:-1:2
        deltazp(i) = deltazp(i-1);
     end
-    deltazp(1) = D(k) - D(k-1);
+    deltazp(1) = Dist(k) - D(k-1);
 
     % Prawo regulacji
     
@@ -104,7 +104,6 @@ for k = start:n
     yk(1:end)=Y(k);
     duk = fmincon(@(duk)(yzad-yk+MP*deltaup+MZP*deltazp-M*duk)'*(yzad-yk+MP*deltaup+MZP*deltazp-M*duk)+lambda*duk'*duk,duk,A,b,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
     deltauk=duk(1);
-    k
 
     for i = D-1:-1:2
       deltaup(i) = deltaup(i-1);
