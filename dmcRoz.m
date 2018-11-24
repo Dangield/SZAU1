@@ -35,8 +35,8 @@ end
 
 % zmienne i macierze regulatora
 D=length(S(1,:));
-N=D;
-Nu=N;
+N=220;
+Nu=70;
 DZ = length(Z);
 if il == 2
     lambda = [1000 7000];

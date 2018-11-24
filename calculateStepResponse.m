@@ -1,7 +1,7 @@
 clear variables
 close all
 
-n = 600;
+n = 500;
 tau = 50;
 U0 = 54;
 D0 = 10;
