@@ -7,7 +7,7 @@ D=length(s);
 N=D;
 Nu=D;
 DZ = length(z);
-lambda = 1;
+lambda = 5500;
 
 M=zeros(N,Nu);
 for i=1:N
@@ -50,25 +50,35 @@ deltaup=zeros(1,D-1);
 deltazp=zeros(1,DZ-1);
 
 % dane
-n = 400;
+n = 4000;
 tau = 50;
 U0 = 54;
 D0 = 10;
 Y0 = 16;
-dY = 5;
 start = 100;
+dY = [start 34; start+2000 4.5];
 
 U = U0*ones(1,n);
 D = D0*ones(1,n);
 Y = Y0*ones(1,n);
 Yz = Y;
-Yz(start:n) = Y0+dY;
+for i = 1:length(dY)
+    Yz(dY(i,1):n) = dY(i,2);
+end
 e = zeros(1,n);
 
 resetObj();
+load('state.mat');
+load('params.mat');
+hold on
 for k = start:n
     % symulacja
-    Y(k) = obj(U(k-1-tau), D(k-1));
+    V1 = V1 + U(k-1-tau) + D(k-1) - a1*h1^0.5;
+    V2 = V2 + a1*h1^0.5 - a2*h2^0.5;
+    h1 = (V1/C1)^0.5;
+    h2 = (V2/C2)^0.5;
+    Y(k) = h2;
+%     Y(k) = obj(U(k-1-tau), D(k-1));
     % uchyb
     e(k) = Yz(k) - Y(k);
     
