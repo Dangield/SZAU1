@@ -1,0 +1,28 @@
+\chapter{Opis obiektu}
+	\label{ch:opis}
+	Zadanie polegało na zaimplementowaniu oraz przebadaniu określonych algorytmów dla podanego przez prowadzącego obiektu. Podany przez prowadzącego obiekt miał postać układu dwóch zbiorników wodnych. Do pierwszego zbiornika wpływa woda z dwóch dopływów: sterującego$F_1$ oraz zakłócającego $F_D$. Woda wypływa ze spodu pierwszego zbiornika strumieniem $F_2$ (który zależy od wysokości wody w pierwszym zbiorniku $h_1$) i wpada do drugiego zbiornika. Następnie woda w drugim zbiorniku wypływa z jego spodu strumieniem $F_3$, zależnym od poziomu wysokości wody w drugim zbiorniku $h_2$ . Zmienną regulowaną w układzie jest poziom wody w drugim zbiorniku, natomiast zmienną sterującą jest strumień $F_{1in}$, którego przedłużeniem jest strumień $F_1$. Wszystko opisane jest poniżej w układzie równań \ref{eq:zad}.
+	
+	\begin{equation}
+		\left\{
+			\begin{tabular}{l}
+				$\frac{dV_1}{dt} = F_1 + F_D - F_2$ \\\\
+				$\frac{dV_2}{dt} = F_2 - F_3$\\\\
+				$F_2(h_1) = \alpha_1\sqrt{h_1},\quad F_3(h_2) = \alpha_2\sqrt{h_2},\quad V_1(h_1)=C_1*h_1^2,\quad V_2(h_2)=C_2*h_2^2$\\\\
+				$F_1(t) = F_{1in}(t-\tau)$
+			\end{tabular}
+		\right.
+		\label{eq:zad}
+	\end{equation}
+	W równaniach tych występują stałe zmienne o wartościach:
+	\begin{itemize}
+		\item $C_1 = C_2 = 0.95$
+		\item $\alpha_1 = \alpha_2 = 16$
+		\item $\tau = 50s$
+	\end{itemize}
+	Dla układu podany został stały punkt pracy o wartościach:
+	\begin{itemize}
+		\item $F_1=54cm^3/s$
+		\item $F_D=10cm^3/s$
+		\item $h_2 = 16cm$
+	\end{itemize}
+	\newpage
