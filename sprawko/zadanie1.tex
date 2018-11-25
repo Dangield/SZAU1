@@ -62,3 +62,184 @@
 			\label{rys:modellin_z}
 		\end{figure}
 		\newpage
+	
+	\section{Regulator}
+		\label{sec:dmc}
+		Tworząc regulator dla posiadanego obiektu zdecydowaliśmy się na regulator predykcyjny DMC. Nasza decyzja wynikała z faktu możliwości uzyskania przez nas niezaszumionej odpowiedzi skokowej obiektu na skok sterowania oraz skok zakłócenia oraz z faktu, że stosowanie regulatora DMC w formie GPC jesteśmy w stanie uwzględnić zakłócenie w regulatorze.
+		
+		W celu uzyskania odpowiedzi skokowych wykorzystaliśmy obiekt zlinearyzowany w punkcie pracy. Wykonując skok sterowania z punktu pracy otrzymaliśmy przebieg wyjścia obiektu. Następnie odjeliśmy od przebiegu wartość wyjścia w punkcie pracy i podzieliliśmy przez długość skoku sterowania, zgodnie z wzorem \ref{eq:skokowa}, otrzymując w ten sposób znormalizowaną odpowiedź skokową. Dla odpowiedzi skokowej zakłócenia postąpiliśmy analogicznie wykonując skok zakłócenia i dzieląc na końcu przez długość tegoż skoku. Wygląd obydwu odpowiedzi przedstawiony został na wykresie \ref{rys:skok}.
+		
+		\begin{equation}
+			s = \frac{y-y_0}{\Delta u}
+			\label{eq:skokowa}
+		\end{equation}
+		
+		\begin{figure}[h!]
+			\includegraphics[width=0.9\linewidth]{plots/z1_step.eps}
+			\caption{Odpowiedzi skokowe dla skoku sterowania(s) i zakłócenia(z)}
+			\label{rys:skok}
+		\end{figure}
+	
+		Do obliczania regulacji DMC używaliśmy regulatora w formie analitycznej, określonego wzorami od \ref{yzadm} do \ref{dU1}:
+		
+		\begin{equation}
+		\boldsymbol{Y}^{\mathrm{zad}}(k)=\left[
+		\begin{array}{c}
+		Y^{\mathrm{zad}}(k)\\
+		\vdots\\
+		Y^{\mathrm{zad}}(k)
+		\end{array}
+		\right]_{\mathrm{Nx1}}
+		\label{yzadm}
+		\end{equation}
+		
+		\begin{equation}
+		\boldsymbol{Y}(k)=\left[
+		\begin{array}{c}
+		y(k)\\
+		\vdots\\
+		y(k)
+		\end{array}
+		\right]_{\mathrm{Nx1}}
+		\label{ym}
+		\end{equation}
+		
+		\begin{equation}
+		\triangle\boldsymbol{U}(k)=\left[
+		\begin{array}{c}
+		\triangle u(k|k)\\
+		\vdots\\
+		\triangle u(k+N_u -1 |k)
+		\end{array}
+		\right]_{\mathrm{N_ux1}}
+		\label{dUm}
+		\end{equation}
+		
+		\begin{equation}
+		\triangle\boldsymbol{U^P}(k)=\left[
+		\begin{array}{c}
+		\triangle u(k-1)\\
+		\vdots\\
+		\triangle u(k-(D-1))
+		\end{array}
+		\right]_{\mathrm{(D-1)x1}}
+		\label{dUPm}
+		\end{equation}
+		
+		\begin{equation}
+		\boldsymbol{M}=\left[
+		\begin{array}
+		{cccc}
+		s_{1} & 0 & \ldots & 0\\
+		s_{2} & s_{1} & \ldots & 0\\
+		\vdots & \vdots & \ddots & \vdots\\
+		s_{N} & s_{N-1} & \ldots &  s_{N-N_{\mathrm{u}}+1}
+		\end{array}
+		\right]_{\mathrm{NxN_u}}
+		\label{Mm}
+		\end{equation}
+		
+		\begin{equation}
+		\boldsymbol{M^P}=\left[
+		\begin{array}
+		{cccc}
+		s_{2}-s_{1} & s_{3}-s_{2} & \ldots & s_{D}-s_{D-1}\\
+		s_{3}-s_{1} & s_{4}-s_{2} & \ldots & s_{D+1}-s_{D-1}\\
+		\vdots & \vdots & \ddots & \vdots\\
+		s_{N+1}-s_{1} & s_{N+2}-s_{2} & \ldots &  s_{N+D-1}-S_{D-1}
+		\end{array}
+		\right]_{\mathrm{NxD-1}}
+		\label{MPm}
+		\end{equation}
+		
+		\begin{equation}
+		\boldsymbol{M^{zP}}=\left[
+		\begin{array}
+		{ccccc}
+		sz_{1} & sz_{2}-sz_{1} & sz_{3}-sz_{2} & \ldots & sz_{D_z}-sz_{D_z-1}\\
+		sz_{2} & sz_{3}-sz_{1} & sz_{4}-sz_{2} & \ldots & sz_{D_z+1}-sz_{D_z-1}\\
+		\vdots & \vdots & \vdots & \ddots & \vdots\\
+		sz_{N} & sz_{N+1}-sz_{1} & sz_{N+2}-sz_{2} & \ldots &  sz_{N+D_z-1}-sz_{D_z-1}
+		\end{array}
+		\right]_{\mathrm{NxDz}}
+		\label{MPzm}
+		\end{equation}
+		
+		\begin{equation}
+		Y^0(k)=Y(k)+M^P\triangle U^P(k)+M^{zP}\triangle  Z^P(k)
+		\label{Y0z}
+		\end{equation}
+		
+		\begin{equation}
+		K=(M^TM+\lambda*I)^{-1}M^T
+		\label{K}
+		\end{equation}
+		
+		\begin{equation}
+		\triangle U(k)=K(Y^{zad}(k)-Y^0(k))
+		\label{dU1}
+		\end{equation}
+		
+		W naszej regulacji potrzebujemy wyznaczyć tylko pierwszy element macierzy $\triangle U(k)$ czyli $\triangle u(k|k)$. W tym celu rozwijamy wzór do postaci:
+		
+		\begin{equation}
+		\triangle u(k|k)=k_ee(k)-k_u\triangle\boldsymbol U^P-k_z\triangle\boldsymbol Z^P
+		\label{dukkz}
+		\end{equation}
+		
+		gdzie:
+		
+		\begin{equation}
+		e(k)=Y^{zad}(k)-Y(k)
+		\label{e}
+		\end{equation}
+		
+		\begin{equation}
+		k_e=\sum_{i=1}^N K(1,i)
+		\label{ke}
+		\end{equation}
+		
+		\begin{equation}
+		k_u=kM^P
+		\label{ku}
+		\end{equation}
+		
+		\begin{equation}
+		k_z=kM^{zP}
+		\label{kz}
+		\end{equation}
+		
+		k to oznaczenie pierwszego wiersza macierzy K. Aktualne sterowanie otrzymujemy poprzez zsumowanie poprzedniego sterowania i aktualnie wyliczonego $\triangle u(k|k)$. 
+		
+		Po implementacji przystąpiliśmy do testowania regulatora. W tym celu zadaliśmy mu przebieg zakładający 4 zmiany wartości zadanej oraz 4 zmiany zakłócenia. Testowanie obiektu wymagało od nas także dobrania horyzontów oraz wartości lambda. Co do horyzontów, ponieważ zmniejszanie ich nie może poprawić regulacji pozostaliśmy przy stałej wartości równej odpowiedzi skokowej. Jeśli chodzi o lambda dla bardzo małych wartości przebiegi były nieakceptowalne. Poniżej przedstawiliśmy przebiegi regulacji dla trzech różnych lambd: 100, 2000 oraz 10000. Dla tych trzech przebiegów obliczony został średni błąd kwadratowy regulacji określony wzorem \ref{eq:blad}. Dla poszczególnych przebiegów błąd ten wynosił:
+		\begin{itemize}
+			\item lambda 100 - 13.2852
+			\item lambda 2000 - 18.4502
+			\item lambda 10000 - 27.1046
+		\end{itemize}
+		Dla lambdy 100 błąd jest definitywnie najmniejszy, jednakże zarówno sterowanie jak i wyjście ulegają znacznym oscylacjom. Sytuacja dla lambda 10000 jest odwrotna, oscylacji brak, jednakże błąd wzrósł dwukrotnie. Lambda 2000 jest najlepszym rozwiązaniem z przetestowanych, oscylacje są obecne, jednakże błąd nie jest aż taki wysoki
+		
+		\begin{equation}
+			e = \frac{\sum_{t=1}^{t_{max}}(y_{zad}(t)-y(t))^2}{t_{max}}
+			\label{eq:blad}
+		\end{equation}
+		
+		
+		\begin{figure}
+			\includegraphics[width=0.9\linewidth]{plots/z1_dmc_100.eps}
+			\caption{Przebieg regulacji dla lambda = 100}
+			\label{rys:dmc100}
+		\end{figure}
+		
+		\begin{figure}
+			\includegraphics[width=0.9\linewidth]{plots/z1_dmc_2000.eps}
+			\caption{Przebieg regulacji dla lambda = 2000}
+			\label{rys:dmc1000}
+		\end{figure}
+		
+		\begin{figure}
+			\includegraphics[width=0.9\linewidth]{plots/z1_dmc_10000.eps}
+			\caption{Przebieg regulacji dla lambda = 10000}
+			\label{rys:dmc10000}
+		\end{figure}
+	\newpage
