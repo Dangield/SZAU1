@@ -54,41 +54,17 @@ elseif il == 5
 end
     
 M=zeros(N,Nu,il);
-MP=zeros(N,D-1,il);
-MZP=zeros(N,DZ,il);
+Snr = zeros(D,il);
 for r = 1:il
     s = S(F1r(r)-23,:);
     z = Z(F1r(r)-23,:);
+    Snr(:,r)=s;
     
-   
     for i=1:N
        for j=1:Nu
           if (i>=j)
              M(i,j,r)=s(i-j+1);
           end
-       end
-    end
-
-    
-    for i=1:N
-       for j=1:D-1
-          if i+j<=D
-             MP(i,j,r)=s(i+j)-s(j);
-          else
-             MP(i,j,r)=s(D)-s(j);
-          end    
-       end
-    end
-
-    
-    for i=1:N
-        MZP(i,1,r) = z(i);
-       for j=2:DZ
-          if i+j-1<=DZ
-             MZP(i,j,r)=z(i+j-1)-z(j);
-          else
-             MZP(i,j,r)=z(DZ)-z(j);
-          end      
        end
     end
 end
@@ -103,7 +79,7 @@ U0 = 54;
 D0 = 10;
 Y0 = 16;
 start = 100;
-dY = [start 14; start+2000 4.5; start+4000 24; start+6000 14];
+dY = [start 34; start+2000 4.5; start+4000 24; start+6000 14];
 n = length(dY)*2000+100;
 n = 800;
 
@@ -121,6 +97,7 @@ yzad = zeros(1,N)';
 yk = zeros(1,N)';
 A = [tril(ones(Nu));tril(ones(Nu))*-1];
 B = zeros(2*Nu,1);
+dk = 0;
 for k = start:n
     % symulacja
     V1 = V1 + U(k-1-tau) + Dist(k-1) - a1*h1^0.5;
@@ -152,20 +129,41 @@ for k = start:n
         end
     end
     Mr=zeros(N,Nu);
-    MPr=zeros(N,D-1);
-    MZPr=zeros(N,DZ);
+    Sr = zeros(D,1);
     lambdar = 0;
     for i = 1:il
         Mr = Mr + w(i)*M(:,:,i)/sum(w);
-        MPr = MPr + w(i)*MP(:,:,i)/sum(w);
-        MZPr = MZPr + w(i)*MZP(:,:,i)/sum(w);
+        Sr = Sr + w(i)*Snr(:,i)/sum(w);
     end
     lambdar = w*lambda'/sum(w);
+    y0 = zeros(N,1);
+    dk = Y(k);
+    if k<=D
+        dk = dk-Sr(D)*U(1);
+    else
+        dk = dk-Sr(D)*U(k-D);
+    end
+    for i = 1:D-1
+        if i<k-1
+            dk=dk-Sr(i)*(U(k-i)-U(k-i-1));
+        end
+    end
+    for i=1:N
+        if k-1<D-i
+            y0(i)=Sr(D)*U(1)+dk;
+        else
+            y0(i)=Sr(D)*U(k-D+i)+dk;
+        end
+        for j = i+1:D-1
+            if j-i<k-1
+                y0(i)=y0(i)+Sr(j)*(U(k-j+i)-U(k-j+i-1));
+            end
+        end
+    end
     B(1:Nu)=(84-U(k-1));
     B(Nu+1:end) = (U(k-1)-24);
     yzad(1:end)=Yz(k);
-    yk(1:end)=Y(k);
-    duk = fmincon(@(duk)(yzad-yk-MPr*deltaup-MZPr*deltazp-Mr*duk)'*(yzad-yk-MPr*deltaup-MZPr*deltazp-Mr*duk)+lambdar*duk'*duk,duk,A,B,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
+    duk = fmincon(@(duk)(yzad-y0-Mr*duk)'*(yzad-y0-Mr*duk)+lambdar*duk'*duk,duk,A,B,[],[],ones(Nu,1)*-60,ones(Nu,1)*60);
     DELTAuk = duk(1);
     %duk = circshift(duk,-1);
     k
