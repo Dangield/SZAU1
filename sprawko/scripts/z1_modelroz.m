@@ -40,6 +40,7 @@ close all
         end
     end
     hr0 = (b+c)./2;
+    hr0 = (a+d)./2;
     Vr0 = C1*hr0.^2;
     Fr0 = a1*hr0.^0.5-10;
 %     Fr0 = [29 43 54 67 79];
@@ -109,9 +110,6 @@ close all
 %             V1(2+il+1,t) = V1(3,t-1) + F1(t-1)+ FD(t-1) - a1*h1(3,t-1)^0.5;
 %             h1(3,t) = (V1(3,t)/C1)^0.5;
             h2(2+il+1,t) = w*h2(3:2+il, t)/sum(w);
-            if isnan(h2(2+il+1,t))
-                sdasda
-            end
             h1(2+il+1,t) = w*h1(3:2+il, t)/sum(w);
             V1(2+il+1,t) = w*V1(3:2+il, t)/sum(w);
             V2(2+il+1,t) = w*V2(3:2+il, t)/sum(w);
