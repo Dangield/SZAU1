@@ -32,6 +32,9 @@ function [a, c] = z1_modelroz(il)
         end
     end
     plot(hr0, ones(1,il), 'ko')
+    xlabel('h2')
+    ylabel('przynale¿noœæ')
+    title('Funkcje przynale¿noœci regulatorów lokalnych w regulacji rozmytej wzglêdem wartoœci wyjœcia')
     F10 = 54;
     FD0 = 10;
     h10 = 16;
