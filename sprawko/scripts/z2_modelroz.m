@@ -14,7 +14,7 @@ function [a, c, hr0] = z2_modelroz(il, draw)
     c = ymin+dy:dy:ymax-dy;
     hr0 = ones(1,il);
     hr0(1) = (c(1)+ymin)/2-1;
-    hr0(il) = (ymax+c(il-1))/2+1;
+    hr0(il) = min((ymax+c(il-1))/2+1, ymax);
     if il > 2
         hr0(2:il-1) = (c(2:il-1)+c(1:il-2))./2;
     end

@@ -1,11 +1,9 @@
 function [E] = z1_dmc(D, N, Nu, DZ, lambda, draw)
-%e, Y, U, Dist
+
     % zmienne i macierze regulatora
     [s, z] = z1_step(16, false);
     D = min(D, length(s));
     DZ = min(DZ, length(z));
-%     D = 225;
-%     DZ = 225;
     N = min(min(N,D),DZ);
     Nu = min(Nu, N);
 
@@ -68,9 +66,6 @@ function [E] = z1_dmc(D, N, Nu, DZ, lambda, draw)
 
     U = U0*ones(1,n);
     Dist = D0*ones(1,n);
-%     if zak > 0
-%         Dist(start:n) = zak;
-%     end
     Y = Y0*ones(1,n);
     Yz = Y;
     for i = 1:length(dY)
@@ -104,7 +99,6 @@ function [E] = z1_dmc(D, N, Nu, DZ, lambda, draw)
     end
 
     if draw
-        figure
         subplot(3,1,1)
         plot(1:n, Yz, 'r')
         xlabel('t[s]')

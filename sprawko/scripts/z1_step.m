@@ -11,8 +11,6 @@ function [s,z] = z1_step(Y0, draw)
     a2 = 16;
     step = 1;
 
-    % S = zeros(1, n-start);
-    % Z = zeros(1, n-start);
     h10 = Y0;
     V10 = C1*h10^2;
     h20 = Y0;
@@ -49,12 +47,12 @@ function [s,z] = z1_step(Y0, draw)
     if draw
         figure
         subplot(2,1,1)
+        plot(s)
         ylabel('s')
         xlabel('k')
-        plot(s)
         subplot(2,1,2)
+        plot(z)
         ylabel('z')
         xlabel('k')
-        plot(z)
     end
 end
