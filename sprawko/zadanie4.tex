@@ -1,0 +1,19 @@
+\chapter{Numeryczny rozmyty regulator NPL}
+	Rozmyty regulator numeryczny NPL różni się od regulatora SL sposobem liczenia aktualnej odpowiedzi swobodnej. Wszystkie elementy odpowiedzi swobodnej liczy się rekurencyjnie za pomocą wzorów od \ref{eq:npl1} do \ref{eq:npl3}, przy czym przyszłe odpowiedzi modelu $y_{k+i}^M$ liczy się rekurencyjnie z modelu rozmytego obiektu, zakładając przyszłe przyrosty sterowania równe 0.	Dalsza praca regulatora postępuje tak jak dla algorytmu SL, włącznie z obliczaniem zmiany sterowania za pomocą funkcji optymalizacji.
+	
+	Podczas pracy regulatora wartości horyzontów, lambda oraz kształt funkcji przynależności przyjęte zostały takie jak dla regulatora SL.
+
+	\begin{equation}
+		y_{k+i|k}^0=y_{k+i}^M+dk;
+		\label{eq:npl1}
+	\end{equation}
+	\begin{equation}
+		d_k = y_k-\sum_{i=1}^{D-1}\tilde{s}_i*\Delta u_{k-i}-\tilde{s}_D*u_{k-D}
+		%-\sum_{i=1}^{Dz-1}\tilde{z}_i*\Delta z_{k-i}-\tilde{z}_{Dz}*z_{k-Dz}
+		\label{eq:npl2}
+	\end{equation}
+	\begin{equation}
+		y_{k}^M = \sum_{i=1}^{D-1}\tilde{s}_i*\Delta u_{k-i}+\tilde{s}_D*u_{k-D}
+		%+\sum_{i=1}^{Dz-1}\tilde{z}_i*\Delta z_{k-i}+\tilde{z}_{Dz}*u_{k-Dz}
+		\label{eq:npl3}
+	\end{equation}

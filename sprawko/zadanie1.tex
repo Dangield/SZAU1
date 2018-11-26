@@ -65,7 +65,7 @@
 	
 	\section{Regulator}
 		\label{sec:dmc}
-		Tworząc regulator dla posiadanego obiektu zdecydowaliśmy się na regulator predykcyjny DMC. Nasza decyzja wynikała z faktu możliwości uzyskania przez nas niezaszumionej odpowiedzi skokowej obiektu na skok sterowania oraz skok zakłócenia oraz z faktu, że stosowanie regulatora DMC w formie GPC jesteśmy w stanie uwzględnić zakłócenie w regulatorze.
+		Tworząc regulator dla posiadanego obiektu zdecydowaliśmy się na regulator predykcyjny DMC. Nasza decyzja wynikała z faktu możliwości uzyskania przez nas niezaszumionej odpowiedzi skokowej obiektu na skok sterowania oraz skok zakłócenia oraz z faktu, że stosowanie regulatora DMC z uwzględnieniem zakłócenia mierzalnego jesteśmy w stanie uwzględnić zakłócenie w regulatorze.
 		
 		W celu uzyskania odpowiedzi skokowych wykorzystaliśmy obiekt zlinearyzowany w punkcie pracy. Wykonując skok sterowania z punktu pracy otrzymaliśmy przebieg wyjścia obiektu. Następnie odjeliśmy od przebiegu wartość wyjścia w punkcie pracy i podzieliliśmy przez długość skoku sterowania, zgodnie z wzorem \ref{eq:skokowa}, otrzymując w ten sposób znormalizowaną odpowiedź skokową. Dla odpowiedzi skokowej zakłócenia postąpiliśmy analogicznie wykonując skok zakłócenia i dzieląc na końcu przez długość tegoż skoku. Wygląd obydwu odpowiedzi przedstawiony został na wykresie \ref{rys:skok}.
 		
