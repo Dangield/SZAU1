@@ -1,3 +1,4 @@
+function[E] = z3_sl(D, N, Nu, DZ, lambda, draw)
     close all
     il = 5;
 
@@ -102,7 +103,7 @@
         % uchyb
         e(k) = Yz(k) - Y(k);
 
-        %uwzglï¿½dnianie zakï¿½ï¿½cenia
+        %uwzglêdnianie zak³ócenia
         for i = DZ:-1:2
            deltazp(i) = deltazp(i-1);
         end
