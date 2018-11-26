@@ -1,4 +1,4 @@
-function [a, c] = z1_modelroz(il)
+function [a, c, hr0] = z2_modelroz(il, draw)
     n = 400;
     C1 = 0.95;
     C2 = 0.95;
@@ -20,21 +20,23 @@ function [a, c] = z1_modelroz(il)
     end
     Vr0 = C1*hr0.^2;
     Fr0 = a1*hr0.^0.5-10;
-    figure
-    hold on
-    for r = 1:il
-        if r == 1
-            plot(ymin:0.1:ymax,1-1./(1+exp(-a*([ymin:0.1:ymax]-c(1)))))
-        elseif r == il
-            plot(ymin:0.1:ymax,1./(1+exp(-a*([ymin:0.1:ymax]-c(il-1)))))
-        else
-            plot(ymin:0.1:ymax,1./(1+exp(-a*([ymin:0.1:ymax]-c(r-1))))-1./(1+exp(-a*([ymin:0.1:ymax]-c(r)))))
+    if draw
+        figure
+        hold on
+        for r = 1:il
+            if r == 1
+                plot(ymin:0.1:ymax,1-1./(1+exp(-a*([ymin:0.1:ymax]-c(1)))))
+            elseif r == il
+                plot(ymin:0.1:ymax,1./(1+exp(-a*([ymin:0.1:ymax]-c(il-1)))))
+            else
+                plot(ymin:0.1:ymax,1./(1+exp(-a*([ymin:0.1:ymax]-c(r-1))))-1./(1+exp(-a*([ymin:0.1:ymax]-c(r)))))
+            end
         end
+        plot(hr0, ones(1,il), 'ko')
+        xlabel('h2')
+        ylabel('przynale¿noœæ')
+        title('Funkcje przynale¿noœci regulatorów lokalnych w regulacji rozmytej wzglêdem wartoœci wyjœcia')
     end
-    plot(hr0, ones(1,il), 'ko')
-    xlabel('h2')
-    ylabel('przynale¿noœæ')
-    title('Funkcje przynale¿noœci regulatorów lokalnych w regulacji rozmytej wzglêdem wartoœci wyjœcia')
     F10 = 54;
     FD0 = 10;
     h10 = 16;
@@ -42,11 +44,13 @@ function [a, c] = z1_modelroz(il)
     V10 = C1*h10*h10;
     V20 = C2*h20*h20;
 
-    figure
-    title('Przebiegi wyjœcia dla skoku wartoœci sterowania w chwili 60s.')
-    xlabel('czas[t]')
-    ylabel('h2[cm]')
-    hold on
+    if draw
+        figure
+        title('Przebiegi wyjœcia dla skoku wartoœci sterowania w chwili 60s.')
+        xlabel('czas[t]')
+        ylabel('h2[cm]')
+        hold on
+    end
     for i = 84:-10:24
         F1in = F10 * ones(1,n);
         F1in(start:n) = i;
@@ -87,9 +91,11 @@ function [a, c] = z1_modelroz(il)
             V1(2+il+1,t) = w*V1(3:2+il, t)/sum(w);
             V2(2+il+1,t) = w*V2(3:2+il, t)/sum(w);
         end
-        plot(start:n,h2(1,start:end),'b')
-        plot(start:n,h2(2,start:end),'m')
-        plot(start:n,h2(2+il+1,start:end),'g')
+        if draw
+            plot(start:n,h2(1,start:end),'b')
+            plot(start:n,h2(2,start:end),'m')
+            plot(start:n,h2(2+il+1,start:end),'g')
+        end
     end
 end
 
