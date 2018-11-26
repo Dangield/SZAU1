@@ -52,6 +52,10 @@
 
 		Modelu z pięcioma obiektami lokalnymi działa najlepiej z przedstawionych. Poza kilkoma miejscami przebiegi pokrywają się z przebiegami dla oryginalnego obiektu. Wartości końcowe także są w przybliżeniu równe wartościom końcowym dla obiektu oryginalnego. Obiekt ten jest zdecydowanie najlepszym z utworzonych i to właśnie on wykorzystywany będzie do dalszych badań.
 		
+		Badanie to ukazuje jak przydatne mogą być modele rozmyte przy modelowaniu obiektów nieliniowych. Działanie modelu liniowego w dużej odległości od punktu pracy zbyt znacząco różniło się od działania modelu nieliniowego, by można było stosować je zamiennie. Dzięki wykorzystaniu kilku modeli liniowych sprzężonych w model rozmyty jesteśmy w stanie dosyć dokładnie odwzorować obiekt, co potencjalnie umożliwiałoby stosowanie modelu rozmytego zamiast oryginału.
+		
+		Pomimo prób nie udało się znaleźć lepszego modelu rozmytego, czyli takiego, który niwelowałby znacząco wady modelu otrzymanego automatycznie (różnice w przebiegach funkcji dla skoków do niskich sterowań) nie pogarszając działania reszty modelu. Z tego powodu podtrzymaliśmy naszą decyzję o używaniu wygenerowanych dla 5 modeli lokalnych funkcji przynależności.
+		
 		\begin{figure}[h!]
 			\includegraphics[width=0.9\linewidth]{plots/z2_modelroz_2p.eps}
 			\caption{Porównanie działania dla obiektu rozmytego z dwoma obiektami lokalnymi}
@@ -73,13 +77,44 @@
 			\label{rys:roz5p}
 		\end{figure}
 	\newpage
-	\section{DMC rozmyty}
-	%z2_dmcroz(400, 400, 400, 400, 2000,[],[], true)
-	dmc oryginalny - 18.2898
-	%z2_dmcroz(400, 400, 400, 400, 2000,10,[8.5000   17.5000   24.5000   33.5000], true)
-	dmc zmiana rozmycia - 18.2504
-	%z2_dmcroz(400, 400, 400, 400, 100,10,[8.5000   17.5000   24.5000   33.5000], true)
-	dmc lambda 100 - 13.6096
-	%z2_dmcroz(200, 150, 100, 200, 100,10,[8.5000   17.5000   24.5000   33.5000], true)
-	dmc mniejsze horyzonty - 13.5395
+	\section{DMC rozmyty}\
+		Implementacja rozmytego regulatora DMC nie jest bardzo skomplikowana. W tym celu należy zaimplementować tyle regulatorów DMC ile jest zbiorów rozmytych, w naszym wypadku 5. Regulatory różnią się między sobą odpowiedziami skokowymi, które są zebrane w punktach pracy odpowiadających każdemu z modelów. W każdym kroku regulacji każdy z regulatorów lokalnych oblicza zmianę sterowania. Następnie obliczane są wagi poszczególnych zbiorów rozmytych i następuje rozmycie zmiany sterowania. Każde z wyliczonych sterowań przemnażane jest przez swoją wagę, wyniki sumuje się i dzieli przez sumę wag otrzymując w ten sposób końcową zmianę sterowania.
+		
+		Dodatkowo w wymaganiach napisane było, że regulator rozmyty powinien posiadać ograniczenia. W tym celu przyjęte zostały przez nas: maksymalna wartość sterowania - 90, minimalna wartość sterowania - 20 oraz maksymalna zmiana sterowania w jednym kroku - 1. Ograniczenia te uwzględnia się dopiero po obliczeniu końcowej wartości zmiany sterowania.
+		
+		Stworzony na podstawie wyznaczonych funkcji przynależności regulator rozmyty otrzymał takie same zadanie wyregulowania obiektu jak zwykły regulator w zadaniu pierwszym. Początkowo wartości wszystkich horyzontów zostały ustawione na najwyższą wartość, czyli długość odpowiedzi skokowej - 400, a lambda na wartość dla której przebieg zwykłego regulatora wydał nam się optymalny - 2000. Przebiegi regulacji obiektu dla tych parametrów zostały przedstawione na wykresie \ref{rys:dmcoryg}. Jak widać przebiegi są bardzo dobre, a w porównaniu z przebiegami pojedynczego DMC dla tej samej lambdy wręcz genialne. Błąd regulacji także jest mniejszy i wynosi 18.2898. Obiekt dąży do zadanej wartości wyjścia bez oscylacji ani przesterowań i osiąga go dość szybko.
+		
+		Po tak spektakularnym sukcesie oryginalnego kształtu funkcji rozpoczęliśmy eksperymenty nad jego zmianą w celu dalszej optymalizacji regulacji. Po wielu próbach przystaliśmy na kształt przedstawiony na rysunku \ref{rys:dmcprzyn}. Przebieg regulacji dla tak skonstruowanych zbiorów rozmytych przedstawiony jest na wykresie \ref{rys:dmcroz2000}. Jak widać nie uległ on znaczącej zmianie. Błąd regulacji dla zmienionej funkcji przynależności wyniósł jednak nieco mniej, a dokładnie 18.2504.
+		
+		Po zmianie właściwości rozmycia zdecydowaliśmy się jeszcze sprawdzić działanie dla mniejszych wartości lambda, a dokładnie dla lambda równego 100, dla którego oryginalny DMC nie radził sobie dobrze z regulacją, powodując gasnące oscylacje dla wysokich skoków wartości zadanej. Przebieg dla zmniejszonej lambdy przedstawiony został na wykresie \ref{rys:dmcroz100}. Jak widać uległ on nieco pogorszeniu, zaczęły występować niewielkie przesterowania oraz pojedyncze oscylacje. Z drugiej strony błąd sterowania zmalał prawie o jedną trzecią swojej dotychczasowej wartości, aż do 13.6096. Zdecydowaliśmy, że niewielkie pogorszenie przebiegów jest małą ceną za znacznie niższy błąd i pozostaliśmy przy zmienionej wartości lambda.
+		
+		Ostatnią rzeczą jaką regulowaliśmy dla zaimplementowanego regulatora rozmytego jest zmiana długości horyzontów. Zdecydowaliśmy się na ten krok, choć zazwyczaj nie przynosi on poprawy regulacji, po części ze względu na kolejne zadania projektu, w których wymagane jest używanie algorytmów optymalizacji, znacznie spowalnianych przez dużą złożoność obliczeniową. Horyzonty skracane były przez nas do momentu, gdy błąd regulacji nie ulegał pogorszeniu. W ten sposób doszliśmy do następujących wartości horyzontów: D = 200, N = 150, Nu = 100, Dz = 200. Przebieg regulacji dla zmniejszonych horyzontów znajduje się na wykresie \ref{rys:dmcroz100hor}. Jak widać nie ma w nim widocznych zmian. Co ciekawe błąd regulacji dla skróconych horyzontów uległ nieznacznej poprawie, do poziomu 13.5395. Nie widząc żadnych przeciwwskazań zdecydowaliśmy o dalszym używaniu skróconych horyzontów w kolejnych zadaniach.
+		
+		W wykonanych w tym zadaniu przebiegach regulacji można zauważyć działanie ograniczenia wartości sterowania. Jeśli dokładnie przyjrzeć się wykresom zauważalne jest, że ustabilizowana wartość wyjścia obiektu dla czasu w okolicy 4000s jest nieznacznie większa od zadanej. Dzieje się tak, ponieważ sterowanie osiąga swoją wartość minimalną, co spowodowane jest równoczesną obecnością dużego zakłócenia. Przy wystąpieniu spadku zakłócenia w chwili 4600, regulatorowi po chwili udaje się bez problemu osiągnąć zadaną wartość. Ponieważ zachowanie to umożliwia zaobserwowanie zaimplementowanego ograniczenia nie zostało ono usunięte w kolejnych zadaniach, co mogłoby być wykonane dzięki nieznacznemu zwiększeniu dolnej granicy sterowania.
+		
+		\begin{figure}[h!]
+			\includegraphics[width=0.9\linewidth]{plots/z2_dmc2000oryg.eps}
+			\caption{Przebieg regulacji dla DMC rozmytego przy lambda 2000}
+			\label{rys:dmcoryg}
+		\end{figure}
+		\begin{figure}[h!]
+			\includegraphics[width=0.85\linewidth]{plots/z2_dmcprzyn.eps}
+			\caption{Zmodyfikowane funkcje przynależności}
+			\label{rys:dmcprzyn}
+		\end{figure}
+		\begin{figure}[h!]
+			\includegraphics[width=0.9\linewidth]{plots/z2_dmc2000.eps}
+			\caption{Przebieg regulacji dla DMC rozmytego przy lambda 2000 i zmodyfikowanych funkcjach przynależności}
+			\label{rys:dmcroz2000}
+		\end{figure}
+		\begin{figure}[h!]
+			\includegraphics[width=0.9\linewidth]{plots/z2_dmc100.eps}
+			\caption{Przebieg regulacji dla DMC rozmytego przy lambda 100}
+			\label{rys:dmcroz100}
+		\end{figure}
+		\begin{figure}[h!]
+			\includegraphics[width=0.9\linewidth]{plots/z2_dmchor.eps}
+			\caption{Przebieg regulacji dla DMC rozmytego przy lambda 100 i skróconych horyzontach}
+			\label{rys:dmcroz100hor}
+		\end{figure}
 		
