@@ -21,11 +21,9 @@ function[E] = z3_npl(D, N, Nu, DZ, lambda, draw)
 
     M=zeros(N,Nu,il);
     Snr = zeros(D,il);
-    Znr = zeros(DZ,il);
     for r = 1:il
         [s, z] = z1_step(hr0(r), false);
         Snr(:,r)=s(1:D);
-        Znr(:,r)=z(1:DZ);
 
         for i=1:N
            for j=1:Nu
@@ -100,11 +98,9 @@ function[E] = z3_npl(D, N, Nu, DZ, lambda, draw)
         end
         Mr=zeros(N,Nu);
         Sr = zeros(D,1);
-        Zr = zeros(DZ,1);
         for i = 1:il
             Mr = Mr + w(i)*M(:,:,i)/sum(w);
             Sr = Sr + w(i)*Snr(:,i)/sum(w);
-            Zr = Zr + w(i)*Znr(:,i)/sum(w);
         end
         lambdar = w*lambda'/sum(w);
         y0 = zeros(N,1);
@@ -113,11 +109,6 @@ function[E] = z3_npl(D, N, Nu, DZ, lambda, draw)
             dk = dk-Sr(D)*U(1);
         else
             dk = dk-Sr(D)*U(k-D);
-        end
-        if k<=D
-            dk = dk-Zr(DZ)*Dist(1);
-        else
-            dk = dk-Zr(D)*Dist(k-DZ);
         end
         for i = 1:D-1
             if i<k-1
@@ -130,19 +121,9 @@ function[E] = z3_npl(D, N, Nu, DZ, lambda, draw)
             else
                 y0(i)=Sr(D)*U(k-D+i)+dk;
             end
-            if k-1<DZ-i
-                y0(i)=y0(i)+Zr(DZ)*Dist(1);
-            else
-                y0(i)=y0(i)+Zr(DZ)*Dist(k-DZ+i);
-            end
             for j = i+1:D-1
                 if j-i<k-1
                     y0(i)=y0(i)+Sr(j)*(U(k-j+i)-U(k-j+i-1));
-                end
-            end
-            for j = i+1:DZ-1
-                if j-i<k-1
-                    y0(i)=y0(i)+Zr(j)*(Dist(k-j+i)-Dist(k-j+i-1));
                 end
             end
         end
